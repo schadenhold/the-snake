@@ -57,12 +57,14 @@ class Apple(GameObject):
         self.randomize_position()
 
     def randomize_position(self):
+        """Определяет случайную позицию."""
         self.position = (
             (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
             (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
             )
 
     def random_apple_position(self, game_object):
+        """Не допускает появления яблока на теле змейки."""
         self.randomize_position()  # Генерируем новое яблоко
         # Убеждаемся, что яблоко не появилось на теле змейки
         while self.position in game_object.positions:
@@ -73,6 +75,7 @@ class Apple(GameObject):
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
 
 class Snake(GameObject):
     """
@@ -85,12 +88,6 @@ class Snake(GameObject):
         self.direction = RIGHT
         self.next_direction = None
         self.last = None
-
-    # Метод обновления направления после нажатия на кнопку (перенос в move)
-    # def update_direction(self):
-    #     if self.next_direction:
-    #         self.direction = self.next_direction
-    #         self.next_direction = None
 
     def get_head_position(self):
         """Возвращает координаты головы"""
@@ -115,9 +112,8 @@ class Snake(GameObject):
             y = SCREEN_HEIGHT - GRID_SIZE
         return (x, y)
 
-    # Движение
     def move(self):
-
+        """Метод движения змейки."""
         if not self.positions:
             return
 
@@ -168,16 +164,17 @@ class Snake(GameObject):
     def grow(self):
         """Увеличивает длину змейки"""
         self.length += 1
+        # Фикс бага при съедении первого яблока
+        if self.length == 2:
+            self.length += 1
 
     def check_collision(self):
-        """Проверяет столкновение со стенами или с собой"""
+        """Проверяет столкновение с собой"""
         if not self.positions:
             return True
         head = self.get_head_position()
-        # Проверка столкновения с собой
         if head in self.positions[1:]:
             return True
-
         return False
 
     def check_apple_collision(self, apple):
@@ -193,8 +190,8 @@ class Snake(GameObject):
         self.next_direction = None
         self.last = None
 
-# Функция обработки действий пользователя
 def handle_keys(game_object):
+    """Функция обработки нажатий стрелок на клавиатуре."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -210,6 +207,7 @@ def handle_keys(game_object):
                 game_object.next_direction = RIGHT    
 
 def main():
+    """Основная функция инициализации игры."""
     # Инициализация PyGame:
     pygame.init()
 
