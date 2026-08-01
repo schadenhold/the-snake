@@ -122,11 +122,8 @@ class Snake(GameObject):
             y = SCREEN_HEIGHT - GRID_SIZE
         return (x, y)
 
-    def move(self):
-        """Метод движения змейки."""
-        if not self.positions:
-            return
-
+    def update_direction(self):
+        """Метод обновления направления после нажатия на кнопку."""
         # Обновляем направление, если есть следующее
         if self.next_direction:
             # Проверяем, что новое направление не противоположно текущему
@@ -134,6 +131,13 @@ class Snake(GameObject):
                     or self.direction[1] != -self.next_direction[1]):
                 self.direction = self.next_direction
             self.next_direction = None
+
+    def move(self):
+        """Метод движения змейки."""
+        if not self.positions:
+            return
+
+        self.update_direction()
 
         # Новая позиция головы
         current_head = self.get_head_position()
