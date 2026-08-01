@@ -62,6 +62,7 @@ class GameObject:
 
 class Apple(GameObject):
     """Дочерний класс яблоко со случайной позицией."""
+
     def __init__(self):
         super().__init__(body_color=APPLE_COLOR)
         self.randomize_position()
@@ -139,7 +140,7 @@ class Snake(GameObject):
         new_head_position = (
             current_head[0] + self.direction[0] * GRID_SIZE,
             current_head[1] + self.direction[1] * GRID_SIZE
-            )
+        )
 
         # Телепортация через границы
         new_head_position = self.wrap_position(new_head_position)
