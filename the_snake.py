@@ -41,7 +41,14 @@ clock = pygame.time.Clock()
 
 # Тут опишите все классы игры.
 class GameObject:
-    """Родительский класс для всех игровых объектов"""
+    """Родительский класс для всех игровых объектов.
+    
+    Описывает объект в игре.
+
+    Attributes:
+        position: позиция на экране.
+        body_color: цвет объекта.
+    """
     def __init__(self, position=None, body_color=None):
         self.position = position
         self.body_color = body_color
@@ -120,8 +127,8 @@ class Snake(GameObject):
         # Обновляем направление, если есть следующее
         if self.next_direction:
             # Проверяем, что новое направление не противоположно текущему
-            if (self.direction[0] != -self.next_direction[0] or 
-                self.direction[1] != -self.next_direction[1]):
+            if (self.direction[0] != -self.next_direction[0] or
+                    self.direction[1] != -self.next_direction[1]):
                 self.direction = self.next_direction
             self.next_direction = None
 
@@ -190,6 +197,7 @@ class Snake(GameObject):
         self.next_direction = None
         self.last = None
 
+
 def handle_keys(game_object):
     """Функция обработки нажатий стрелок на клавиатуре."""
     for event in pygame.event.get():
@@ -205,6 +213,7 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT    
+
 
 def main():
     """Основная функция инициализации игры."""
@@ -226,7 +235,7 @@ def main():
             snake.grow()  # Увеличиваем длину змейки
             apple.random_apple_position(snake)
 
-         # Проверка столкновения змейки с собой
+        # Проверка столкновения змейки с собой
         if snake.check_collision():
             snake.reset()  # Сбрасываем змейку
             apple.random_apple_position(snake)
