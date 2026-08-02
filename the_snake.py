@@ -94,10 +94,7 @@ class Snake(GameObject):
 
     def __init__(self):
         super().__init__(body_color=SNAKE_COLOR)
-        self.length = 1
-        self.positions = [(SCREEN_CENTER_X, SCREEN_CENTER_Y)]
-        self.direction = RIGHT
-        self.next_direction = None
+        self.default()
 
     def get_head_position(self):
         """Возвращает координаты головы."""
@@ -155,13 +152,12 @@ class Snake(GameObject):
         """Увеличивает длину змейки."""
         self.length += 1
 
-    def reset(self):
-        """Сбрасывает состояние змейки для перезапуска игры."""
+    def default(self):
+        """Состояние змейки по умолчанию."""
         self.length = 1
         self.positions = [(SCREEN_CENTER_X, SCREEN_CENTER_Y)]
         self.direction = RIGHT
         self.next_direction = None
-        self.last = None
 
 
 def handle_keys(game_object):
@@ -217,7 +213,7 @@ def main():
 
         # Проверка столкновения змейки с собой
         if check_collision(snake):
-            snake.reset()
+            snake.default()
             apple.random_apple_position(snake)
             continue
 
