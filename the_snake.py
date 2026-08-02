@@ -40,7 +40,6 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-# Тут опишите все классы игры.
 class GameObject:
     """Родительский класс для всех игровых объектов.
 
@@ -57,7 +56,9 @@ class GameObject:
 
     def draw(self):
         """Метод для реализации собственной отрисовки дочерними классами."""
-        pass
+        raise NotImplementedError(
+            'Необходимо реализовать метод draw в дочернем классе!'
+        )
 
 
 class Apple(GameObject):
@@ -65,21 +66,21 @@ class Apple(GameObject):
 
     def __init__(self):
         super().__init__(body_color=APPLE_COLOR)
-        self.randomize_position()
-
-    def randomize_position(self):
-        """Определяет случайную позицию."""
-        self.position = (
-            (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
-            (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-        )
+        self.random_apple_position(None)
 
     def random_apple_position(self, game_object):
-        """Не допускает появления яблока на теле змейки."""
-        self.randomize_position()  # Генерируем новое яблоко
-        # Убеждаемся, что яблоко не появилось на теле змейки
-        while self.position in game_object.positions:
-            self.randomize_position()
+        """Генерирует случайную позицию, не пересекающуюся с телом змейки."""
+        # Если game_object None, то проверка не нужна
+        forbidden_positions = game_object.positions if game_object else []
+
+        while True:
+            random_position = (
+                (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
+                (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            )
+            if random_position not in forbidden_positions:
+                self.position = random_position
+                break
 
     def draw(self):
         """Метод отрисовки яблока."""
@@ -103,24 +104,11 @@ class Snake(GameObject):
         """Возвращает координаты головы."""
         if self.positions:
             return self.positions[0]
-        return None
 
-    def wrap_position(self, pos):
+    def wrap_position(self, position):
         """Телепортирует позицию через границы поля."""
-        x, y = pos
-        # Если вышли за правую границу - появляемся слева
-        if x >= SCREEN_WIDTH:
-            x = 0
-        # Если вышли за левую границу - появляемся справа
-        elif x < 0:
-            x = SCREEN_WIDTH - GRID_SIZE
-        # Если вышли за нижнюю границу - появляемся сверху
-        if y >= SCREEN_HEIGHT:
-            y = 0
-        # Если вышли за верхнюю границу - появляемся снизу
-        elif y < 0:
-            y = SCREEN_HEIGHT - GRID_SIZE
-        return (x, y)
+        horizontal, vertical = position
+        return (horizontal % SCREEN_WIDTH, vertical % SCREEN_HEIGHT)
 
     def update_direction(self):
         """Метод обновления направления после нажатия на кнопку."""
@@ -136,9 +124,7 @@ class Snake(GameObject):
         """Метод движения змейки."""
         if not self.positions:
             return
-
         self.update_direction()
-
         # Новая позиция головы
         current_head = self.get_head_position()
         new_head_position = (
