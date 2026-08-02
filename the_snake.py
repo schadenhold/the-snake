@@ -98,7 +98,6 @@ class Snake(GameObject):
         self.positions = [(SCREEN_CENTER_X, SCREEN_CENTER_Y)]
         self.direction = RIGHT
         self.next_direction = None
-        self.last = None
 
     def get_head_position(self):
         """Возвращает координаты головы."""
@@ -141,36 +140,20 @@ class Snake(GameObject):
         # Добавляем новую голову
         self.positions.insert(0, new_head_position)
 
-        # Если длина превышает нужную, удаляем хвост и запоминаем для затирания
+        # Если длина превышает нужную, удаляем хвост
         if len(self.positions) > self.length:
-            self.last = self.positions.pop()
-        else:
-            self.last = None
+            self.positions.pop()
 
     def draw(self):
         """Метод отрисовки змейки."""
-        for position in self.positions[:-1]:
+        for position in self.positions:
             rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
-        # Отрисовка головы змейки
-        if self.positions:
-            head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, self.body_color, head_rect)
-            pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
-
-        # Затирание последнего сегмента
-        if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
-
     def grow(self):
         """Увеличивает длину змейки."""
         self.length += 1
-        # Фикс бага при съедении первого яблока
-        if self.length == 2:
-            self.length += 1
 
     def check_collision(self):
         """Проверяет столкновение с собой."""
