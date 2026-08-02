@@ -112,18 +112,15 @@ class Snake(GameObject):
 
     def update_direction(self):
         """Метод обновления направления после нажатия на кнопку."""
-        # Обновляем направление, если есть следующее
         if self.next_direction:
-            # Проверяем, что новое направление не противоположно текущему
-            if (self.direction[0] != -self.next_direction[0]
-                    or self.direction[1] != -self.next_direction[1]):
+            horizontal, vertical = self.direction
+            next_horizontal, next_vertical = self.next_direction
+            # проверка на запрет в противоположное движение
+            if horizontal != -next_horizontal or vertical != -next_vertical:
                 self.direction = self.next_direction
-            self.next_direction = None
 
     def move(self):
         """Метод движения змейки."""
-        if not self.positions:
-            return
         self.update_direction()
         # Новая позиция головы
         current_head = self.get_head_position()
