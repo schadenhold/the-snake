@@ -155,18 +155,6 @@ class Snake(GameObject):
         """Увеличивает длину змейки."""
         self.length += 1
 
-    def check_collision(self):
-        """Проверяет столкновение с собой."""
-        if not self.positions:
-            return True
-        head = self.get_head_position()
-        return head in self.positions[1:]
-
-    def check_apple_collision(self, apple):
-        """Проверяет, съела ли змейка яблоко."""
-        head = self.get_head_position()
-        return head == apple.position
-
     def reset(self):
         """Сбрасывает состояние змейки для перезапуска игры."""
         self.length = 1
@@ -193,6 +181,20 @@ def handle_keys(game_object):
                 game_object.next_direction = RIGHT
 
 
+def check_collision(game_object):
+    """Проверяет столкновение змейки с собой."""
+    if not game_object.positions:
+        return True
+    head = game_object.get_head_position()
+    return head in game_object.positions[1:]
+
+
+def check_apple_collision(game_object_1, game_object_2):
+    """Проверяет, съела ли змейка яблоко."""
+    head = game_object_1.get_head_position()
+    return head == game_object_2.position
+
+
 def main():
     """Основная функция инициализации игры."""
     # Инициализация PyGame:
@@ -209,13 +211,13 @@ def main():
         snake.move()
 
         # Проверка столкновения с яблоком
-        if snake.check_apple_collision(apple):
-            snake.grow()  # Увеличиваем длину змейки
+        if check_apple_collision(snake, apple):
+            snake.grow()
             apple.random_apple_position(snake)
 
         # Проверка столкновения змейки с собой
-        if snake.check_collision():
-            snake.reset()  # Сбрасываем змейку
+        if check_collision(snake):
+            snake.reset()
             apple.random_apple_position(snake)
             continue
 
