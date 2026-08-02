@@ -66,9 +66,9 @@ class Apple(GameObject):
 
     def __init__(self):
         super().__init__(body_color=APPLE_COLOR)
-        self.random_apple_position(None)
+        self.randomize_position(None)
 
-    def random_apple_position(self, game_object):
+    def randomize_position(self, game_object):
         """Генерирует случайную позицию, не пересекающуюся с телом змейки."""
         # Если game_object None, то проверка не нужна
         forbidden_positions = game_object.positions if game_object else []
@@ -209,12 +209,12 @@ def main():
         # Проверка столкновения с яблоком
         if check_apple_collision(snake, apple):
             snake.grow()
-            apple.random_apple_position(snake)
+            apple.randomize_position(snake)
 
         # Проверка столкновения змейки с собой
         elif check_collision(snake):
             snake.default()
-            apple.random_apple_position(snake)
+            apple.randomize_position(snake)
             continue
 
         # Отрисовка объектов
