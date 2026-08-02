@@ -212,7 +212,7 @@ def main():
             apple.random_apple_position(snake)
 
         # Проверка столкновения змейки с собой
-        if check_collision(snake):
+        elif check_collision(snake):
             snake.default()
             apple.random_apple_position(snake)
             continue
