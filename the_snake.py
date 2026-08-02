@@ -122,25 +122,29 @@ class Snake(GameObject):
     def move(self):
         """Метод движения змейки."""
         self.update_direction()
+
+        # Распаковка позиции головы
+        horizontal_head, vertical_head = self.get_head_position()
+
+        # Распаковка направления
+        horizontal_direction, vertical_direction = self.direction
+
         # Новая позиция головы
-        current_head = self.get_head_position()
         new_head_position = (
-            current_head[0] + self.direction[0] * GRID_SIZE,
-            current_head[1] + self.direction[1] * GRID_SIZE
+            horizontal_head + horizontal_direction * GRID_SIZE,
+            vertical_head + vertical_direction * GRID_SIZE
         )
 
         # Телепортация через границы
         new_head_position = self.wrap_position(new_head_position)
 
-        # Сохранения последней позиции
-        if self.positions:
-            self.last = self.positions[-1]
-
         # Добавляем новую голову
         self.positions.insert(0, new_head_position)
-        # Удаляем последний сегмент, если длина не увеличилась
+
+        # Если длина превышает нужную, удаляем хвост и запоминаем для затирания
         if len(self.positions) > self.length:
-            self.positions.pop()
+            self.last = self.positions.pop()
+        else:
             self.last = None
 
     def draw(self):
@@ -150,13 +154,13 @@ class Snake(GameObject):
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
-    # Отрисовка головы змейки
+        # Отрисовка головы змейки
         if self.positions:
             head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, self.body_color, head_rect)
             pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
 
-    # Затирание последнего сегмента
+        # Затирание последнего сегмента
         if self.last:
             last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
