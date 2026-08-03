@@ -22,7 +22,7 @@ BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 
 # Цвет границы ячейки гнилой еды
-BORDER_ROTTEN_COLOR = (165, 160, 115)
+BORDER_ROTTEN_COLOR = (100, 150, 200)
 
 # Цвет яблока
 APPLE_COLOR = (255, 0, 0)
@@ -197,6 +197,13 @@ def check_eatable_collision(snake, eatable_object):
     return head == eatable_object.position
 
 
+def reset_game(snake, apple, rotten):
+    """Сбрасывает состояние игры."""
+    snake.reset()
+    apple.randomize_position(snake, rotten)
+    rotten.randomize_position(snake, apple)
+
+
 def main():
     """Основная функция инициализации игры."""
     # Инициализация PyGame:
@@ -223,18 +230,14 @@ def main():
             snake.length -= 1
             rotten.randomize_position(snake, apple)
             if snake.length < 1:
-                snake.reset()
-                apple.randomize_position(snake, rotten)
-                rotten.randomize_position(snake, apple)
+                reset_game(snake, apple, rotten)
                 continue
             elif len(snake.positions) > snake.length:
                 snake.positions.pop()
 
         # Проверка столкновения змейки с собой
         elif check_collision(snake):
-            snake.reset()
-            apple.randomize_position(snake, rotten)
-            rotten.randomize_position(snake, apple)
+            reset_game(snake, apple, rotten)
             continue
 
         # Отрисовка объектов
