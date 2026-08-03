@@ -72,8 +72,8 @@ class GameObject:
         snake_positions = snake.positions if snake else []
         other_food_position = other_food.position if other_food else []
         random_position = (
-                (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
-                (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
+            (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
         )
         if random_position not in snake_positions or other_food_position:
             self.position = random_position
