@@ -72,15 +72,12 @@ class Apple(GameObject):
         """Генерирует случайную позицию, не пересекающуюся с телом змейки."""
         # Если game_object None, то проверка не нужна
         forbidden_positions = game_object.positions if game_object else []
-
-        while True:
-            random_position = (
+        random_position = (
                 (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
                 (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-            )
-            if random_position not in forbidden_positions:
-                self.position = random_position
-                break
+        )
+        if random_position not in forbidden_positions:
+            self.position = random_position
 
     def draw(self):
         """Метод отрисовки яблока."""
