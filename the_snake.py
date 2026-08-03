@@ -98,11 +98,6 @@ class Snake(GameObject):
         if self.positions:
             return self.positions[0]
 
-    def wrap_position(self, position):
-        """Телепортирует позицию через границы поля."""
-        horizontal, vertical = position
-        return (horizontal % SCREEN_WIDTH, vertical % SCREEN_HEIGHT)
-
     def update_direction(self):
         """Метод обновления направления после нажатия на кнопку."""
         if self.next_direction:
@@ -122,14 +117,11 @@ class Snake(GameObject):
         # Распаковка направления
         horizontal_direction, vertical_direction = self.direction
 
-        # Новая позиция головы
+        # Новая позиция головы с учетом прохода границы экрана
         new_head_position = (
-            horizontal_head + horizontal_direction * GRID_SIZE,
-            vertical_head + vertical_direction * GRID_SIZE
+            (horizontal_head + horizontal_direction * GRID_SIZE) % SCREEN_WIDTH,
+            (vertical_head + vertical_direction * GRID_SIZE) % SCREEN_HEIGHT
         )
-
-        # Телепортация через границы
-        new_head_position = self.wrap_position(new_head_position)
 
         # Добавляем новую голову
         self.positions.insert(0, new_head_position)
