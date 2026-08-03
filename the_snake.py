@@ -170,10 +170,10 @@ def check_collision(game_object):
     return head in game_object.positions[1:]
 
 
-def check_apple_collision(game_object_1, game_object_2):
+def check_eatable_collision(snake, eatable_object):
     """Проверяет, съела ли змейка яблоко."""
-    head = game_object_1.get_head_position()
-    return head == game_object_2.position
+    head = snake.get_head_position()
+    return head == eatable_object.position
 
 
 def main():
@@ -192,7 +192,7 @@ def main():
         snake.move()
 
         # Проверка столкновения с яблоком
-        if check_apple_collision(snake, apple):
+        if check_eatable_collision(snake, apple):
             snake.length += 1
             apple.randomize_position(snake)
 
