@@ -137,10 +137,6 @@ class Snake(GameObject):
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
-    def grow(self):
-        """Увеличивает длину змейки."""
-        self.length += 1
-
     def reset(self):
         """Исходное состояние змейки."""
         self.length = 1
@@ -197,7 +193,7 @@ def main():
 
         # Проверка столкновения с яблоком
         if check_apple_collision(snake, apple):
-            snake.grow()
+            snake.length += 1
             apple.randomize_position(snake)
 
         # Проверка столкновения змейки с собой
