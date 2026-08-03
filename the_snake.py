@@ -21,11 +21,17 @@ BOARD_BACKGROUND_COLOR = (0, 0, 0)
 # Цвет границы ячейки
 BORDER_COLOR = (93, 216, 228)
 
+# Цвет границы ячейки гнилой еды
+BORDER_ROTTEN_COLOR = (165, 160, 115)
+
 # Цвет яблока
 APPLE_COLOR = (255, 0, 0)
 
 # Цвет змейки
 SNAKE_COLOR = (0, 255, 0)
+
+# Цвет гнилой еды
+ROTTEN_COLOR = (145, 140, 55)
 
 # Скорость движения змейки:
 SPEED = 20
@@ -60,30 +66,45 @@ class GameObject:
             'Необходимо реализовать метод draw в дочернем классе!'
         )
 
+    def randomize_position(self, snake, other_food):
+        """Генерирует случайную позицию, не пересекающуюся с другими."""
+        # Если game_object None, то проверка не нужна
+        snake_positions = snake.positions if snake else []
+        other_food_position = other_food.position if other_food else []
+        random_position = (
+                (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
+                (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+        )
+        if random_position not in snake_positions or other_food_position:
+            self.position = random_position
+
 
 class Apple(GameObject):
     """Дочерний класс яблоко со случайной позицией."""
 
     def __init__(self):
         super().__init__(body_color=APPLE_COLOR)
-        self.randomize_position(None)
-
-    def randomize_position(self, game_object):
-        """Генерирует случайную позицию, не пересекающуюся с телом змейки."""
-        # Если game_object None, то проверка не нужна
-        forbidden_positions = game_object.positions if game_object else []
-        random_position = (
-                (randint(0, GRID_WIDTH - 1) * GRID_SIZE),
-                (randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-        )
-        if random_position not in forbidden_positions:
-            self.position = random_position
+        self.randomize_position(None, None)
 
     def draw(self):
         """Метод отрисовки яблока."""
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+
+class Rotten(GameObject):
+    """Дочерний класс лимона со случайной позицией."""
+
+    def __init__(self):
+        super().__init__(body_color=ROTTEN_COLOR)
+        self.randomize_position(None, None)
+
+    def draw(self):
+        """Метод отрисовки яблока."""
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_ROTTEN_COLOR, rect, 1)
 
 
 class Snake(GameObject):
@@ -112,14 +133,14 @@ class Snake(GameObject):
         self.update_direction()
 
         # Распаковка позиции головы
-        horizontal_head, vertical_head = self.get_head_position()
+        horizont_head, vertical_head = self.get_head_position()
 
         # Распаковка направления
-        horizontal_direction, vertical_direction = self.direction
+        horizont_direction, vertical_direction = self.direction
 
         # Новая позиция головы с учетом прохода границы экрана
         new_head_position = (
-            (horizontal_head + horizontal_direction * GRID_SIZE) % SCREEN_WIDTH,
+            (horizont_head + horizont_direction * GRID_SIZE) % SCREEN_WIDTH,
             (vertical_head + vertical_direction * GRID_SIZE) % SCREEN_HEIGHT
         )
 
@@ -183,6 +204,7 @@ def main():
 
     snake = Snake()
     apple = Apple()
+    rotten = Rotten()
 
     while True:
         clock.tick(SPEED)
@@ -194,12 +216,25 @@ def main():
         # Проверка столкновения с яблоком
         if check_eatable_collision(snake, apple):
             snake.length += 1
-            apple.randomize_position(snake)
+            apple.randomize_position(snake, rotten)
+
+        # Проверка столкновения с гнилым яблоком
+        elif check_eatable_collision(snake, rotten):
+            snake.length -= 1
+            rotten.randomize_position(snake, apple)
+            if snake.length < 1:
+                snake.reset()
+                apple.randomize_position(snake, rotten)
+                rotten.randomize_position(snake, apple)
+                continue
+            elif len(snake.positions) > snake.length:
+                snake.positions.pop()
 
         # Проверка столкновения змейки с собой
         elif check_collision(snake):
             snake.reset()
-            apple.randomize_position(snake)
+            apple.randomize_position(snake, rotten)
+            rotten.randomize_position(snake, apple)
             continue
 
         # Отрисовка объектов
@@ -208,6 +243,7 @@ def main():
         # Отрисовка игровых объектов
         apple.draw()
         snake.draw()
+        rotten.draw()
 
         # Обновление экрана
         pygame.display.update()
