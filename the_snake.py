@@ -142,8 +142,8 @@ class Snake(GameObject):
         # Добавляем новую голову
         self.positions.insert(0, new_head_position)
 
-        # Если длина превышает нужную, удаляем хвост
-        if len(self.positions) > self.length:
+        # Когда длина превышает нужную, удаляем хвост
+        while len(self.positions) > self.length:
             self.positions.pop()
 
     def draw(self):
@@ -227,8 +227,6 @@ def main():
             if snake.length < 1:
                 reset_game(snake, apple, rotten)
                 continue
-            elif len(snake.positions) > snake.length:
-                snake.positions.pop()
 
         # Проверка столкновения змейки с собой
         elif check_collision(snake):
