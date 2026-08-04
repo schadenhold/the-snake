@@ -56,15 +56,16 @@ class GameObject:
         body_color: цвет объекта.
     """
 
-    def __init__(self, position=None, body_color=None):
+    def __init__(self, position=None, body_color=None, border_color=None):
         self.position = position
         self.body_color = body_color
+        self.border_color = border_color
 
     def draw(self):
-        """Метод для реализации собственной отрисовки дочерними классами."""
-        raise NotImplementedError(
-            'Необходимо реализовать метод draw в дочернем классе!'
-        )
+        """Метод отрисовки объекта."""
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, self.border_color, rect, 1)
 
     def randomize_position(self, snake, other_food):
         """Генерирует случайную позицию, не пересекающуюся с другими."""
@@ -83,35 +84,29 @@ class Apple(GameObject):
     """Дочерний класс яблоко со случайной позицией."""
 
     def __init__(self):
-        super().__init__(body_color=APPLE_COLOR)
+        super().__init__(
+            body_color=APPLE_COLOR,
+            border_color=BORDER_COLOR
+        )
         self.randomize_position(None, None)
-
-    def draw(self):
-        """Метод отрисовки яблока."""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Rotten(GameObject):
-    """Дочерний класс лимона со случайной позицией."""
+    """Дочерний класс гнилого фрукта со случайной позицией."""
 
     def __init__(self):
-        super().__init__(body_color=ROTTEN_COLOR)
+        super().__init__(
+            body_color=ROTTEN_COLOR,
+            border_color=BORDER_ROTTEN_COLOR
+        )
         self.randomize_position(None, None)
-
-    def draw(self):
-        """Метод отрисовки яблока."""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_ROTTEN_COLOR, rect, 1)
 
 
 class Snake(GameObject):
     """Дочерний класс змейки с учетом направления движения."""
 
     def __init__(self):
-        super().__init__(body_color=SNAKE_COLOR)
+        super().__init__(body_color=SNAKE_COLOR, border_color=BORDER_COLOR)
         self.reset()
 
     def get_head_position(self):
@@ -156,7 +151,7 @@ class Snake(GameObject):
         for position in self.positions:
             rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
             pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+            pygame.draw.rect(screen, self.border_color, rect, 1)
 
     def reset(self):
         """Исходное состояние змейки."""
@@ -225,7 +220,7 @@ def main():
             snake.length += 1
             apple.randomize_position(snake, rotten)
 
-        # Проверка столкновения с гнилым яблоком
+        # Проверка столкновения с гнилым фруктом
         elif check_eatable_collision(snake, rotten):
             snake.length -= 1
             rotten.randomize_position(snake, apple)
